@@ -7,6 +7,7 @@ import hashlib
 import logging
 import requests
 
+KELVIN_TO_CELSIUS = -273.15
 DEFAULT_QUERY_INTERVAL = 5.0
 XIAOMI_THERMOMETER_MODEL = "miaomiaoce.sensor_ht.t1"
 
@@ -123,9 +124,14 @@ class XiaomiThermometer:
         self.query_interval = config.getfloat(
             "query_interval", DEFAULT_QUERY_INTERVAL, minval=1.0
         )
+        self.min_temp = config.getfloat(
+            "min_temp", KELVIN_TO_CELSIUS, minval=KELVIN_TO_CELSIUS
+        )
+        self.max_temp = config.getfloat(
+            "max_temp", 99999999.9, above=self.min_temp
+        )
 
         self.temp = self.humidity = 0.0
-        self.min_temp = self.max_temp = 0.0
         self._callback = None
         self._device_did = None
         self._cloud = None
