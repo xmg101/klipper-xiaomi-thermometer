@@ -1,11 +1,12 @@
 #!/bin/bash
 # Klipper Xiaomi Thermometer 安装脚本
-# 用法: curl -sSL https://raw.githubusercontent.com/xmg101/klipper-xiaomi-thermometer/main/install.sh | bash
+# 用法: curl -sSL https://cdn.jsdelivr.net/gh/xmg101/klipper-xiaomi-thermometer@master/install.sh | bash
 # 或: bash install.sh [klipper_path]
 
 set -e
 
 KLIPPER_PATH="${1:-$HOME/klipper}"
+RAW_BASE="https://cdn.jsdelivr.net/gh/xmg101/klipper-xiaomi-thermometer@master"
 
 echo "=== Klipper Xiaomi Thermometer 安装 ==="
 echo "Klipper 路径: $KLIPPER_PATH"
@@ -28,11 +29,14 @@ else
     echo "  [OK] micloud 安装完成"
 fi
 
-# 复制模块
+# 下载模块（直接用 curl，不依赖本地文件）
 echo "[2/3] 安装 xiaomi_thermometer 模块..."
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cp "$SCRIPT_DIR/xiaomi_thermometer.py" "$EXTRAS_DIR/"
-echo "  [OK] xiaomi_thermometer.py -> $EXTRAS_DIR/"
+if curl -sSL "$RAW_BASE/xiaomi_thermometer.py" -o "$EXTRAS_DIR/xiaomi_thermometer.py"; then
+    echo "  [OK] xiaomi_thermometer.py -> $EXTRAS_DIR/"
+else
+    echo "  [ERROR] 下载失败，手动下载: $RAW_BASE/xiaomi_thermometer.py"
+    exit 1
+fi
 
 # 注册到 temperature_sensors.cfg
 echo "[3/3] 注册模块..."
@@ -40,7 +44,6 @@ CFG_FILE="$EXTRAS_DIR/temperature_sensors.cfg"
 if grep -q "\[xiaomi_thermometer\]" "$CFG_FILE"; then
     echo "  [SKIP] 已注册"
 else
-    # 在 [temperature_combined] 后插入
     sed -i '/^\[temperature_combined\]$/a \\n# Load "xiaomi_thermometer" sensor\n[xiaomi_thermometer]' "$CFG_FILE"
     echo "  [OK] 已注册"
 fi
