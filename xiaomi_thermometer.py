@@ -242,3 +242,7 @@ class XiaomiThermometer:
 def load_config(config):
     pheaters = config.get_printer().load_object(config, "heaters")
     pheaters.add_sensor_factory("xiaomi_thermometer", XiaomiThermometer)
+
+
+def load_config_prefix(config):
+    return XiaomiThermometer(config)
