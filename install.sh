@@ -24,17 +24,14 @@ fi
 echo "[1/3] 安装 micloud 依赖..."
 if python3 -c "import micloud" 2>/dev/null; then
     echo "  [OK] micloud 已安装"
-else
-    pip3 install --break-system-packages micloud 2>/dev/null \
-      || pip3 install --user micloud 2>/dev/null \
-      || pip3 install micloud 2>/dev/null \
-      || pip3 install --break-system-packages git+https://github.com/Squishy47/micloud.git \
-      || {
-        echo "  [ERROR] micloud 安装失败"
-        echo "  请手动安装: pip3 install --break-system-packages micloud"
-        exit 1
-      }
+elif python3 -m pip install --break-system-packages micloud 2>&1; then
     echo "  [OK] micloud 安装完成"
+elif python3 -m pip install --break-system-packages git+https://github.com/Squishy47/micloud.git 2>&1; then
+    echo "  [OK] micloud(从git) 安装完成"
+else
+    echo "  [ERROR] micloud 安装失败，请手动执行:"
+    echo "    python3 -m pip install --break-system-packages micloud"
+    exit 1
 fi
 
 # 下载模块（直接用 curl，不依赖本地文件）
