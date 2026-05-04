@@ -25,7 +25,15 @@ echo "[1/3] 安装 micloud 依赖..."
 if python3 -c "import micloud" 2>/dev/null; then
     echo "  [OK] micloud 已安装"
 else
-    pip3 install micloud 2>/dev/null || pip3 install git+https://github.com/Squishy47/micloud.git
+    pip3 install --break-system-packages micloud 2>/dev/null \
+      || pip3 install --user micloud 2>/dev/null \
+      || pip3 install micloud 2>/dev/null \
+      || pip3 install --break-system-packages git+https://github.com/Squishy47/micloud.git \
+      || {
+        echo "  [ERROR] micloud 安装失败"
+        echo "  请手动安装: pip3 install --break-system-packages micloud"
+        exit 1
+      }
     echo "  [OK] micloud 安装完成"
 fi
 
