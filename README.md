@@ -7,7 +7,7 @@
 ## 安装
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/xmg101/klipper-xiaomi-thermometer/main/install.sh | bash
+curl -sSL https://cdn.jsdelivr.net/gh/xmg101/klipper-xiaomi-thermometer@master/install.sh -o install.sh && bash install.sh
 ```
 
 如果 Klipper 不在 `~/klipper`，指定路径：
@@ -15,6 +15,8 @@ curl -sSL https://raw.githubusercontent.com/xmg101/klipper-xiaomi-thermometer/ma
 ```bash
 bash install.sh /custom/path/to/klipper
 ```
+
+依赖：仅需 `requests`（Klipper 环境通常已自带）
 
 ## 配置
 

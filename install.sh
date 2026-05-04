@@ -20,22 +20,18 @@ if [ ! -d "$EXTRAS_DIR" ]; then
     exit 1
 fi
 
-# 安装 micloud
-echo "[1/3] 安装 micloud 依赖..."
-if python3 -c "import micloud" 2>/dev/null; then
-    echo "  [OK] micloud 已安装"
-elif python3 -m pip install --break-system-packages micloud 2>&1; then
-    echo "  [OK] micloud 安装完成"
-elif python3 -m pip install --break-system-packages git+https://github.com/Squishy47/micloud.git 2>&1; then
-    echo "  [OK] micloud(从git) 安装完成"
+# 检查 requests 库
+echo "[1/2] 检查依赖..."
+if python3 -c "import requests" 2>/dev/null; then
+    echo "  [OK] requests 已安装"
 else
-    echo "  [ERROR] micloud 安装失败，请手动执行:"
-    echo "    python3 -m pip install --break-system-packages micloud"
-    exit 1
+    echo "  正在安装 requests..."
+    python3 -m pip install --break-system-packages requests
+    echo "  [OK] requests 安装完成"
 fi
 
-# 下载模块（直接用 curl，不依赖本地文件）
-echo "[2/3] 安装 xiaomi_thermometer 模块..."
+# 下载模块
+echo "[2/2] 安装 xiaomi_thermometer 模块..."
 if curl -sSL "$RAW_BASE/xiaomi_thermometer.py" -o "$EXTRAS_DIR/xiaomi_thermometer.py"; then
     echo "  [OK] xiaomi_thermometer.py -> $EXTRAS_DIR/"
 else
@@ -44,7 +40,6 @@ else
 fi
 
 # 注册到 temperature_sensors.cfg
-echo "[3/3] 注册模块..."
 CFG_FILE="$EXTRAS_DIR/temperature_sensors.cfg"
 if grep -q "\[xiaomi_thermometer\]" "$CFG_FILE"; then
     echo "  [SKIP] 已注册"
